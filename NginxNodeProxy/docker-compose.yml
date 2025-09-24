@@ -1,0 +1,41 @@
+services:
+  nginx:
+    image: nginx:1.27-alpine
+    container_name: nginx
+    depends_on: [node]
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - certbot-etc:/etc/letsencrypt               # ← 証明書を共有
+      - certbot-web:/var/www/certbot               # ← ACME用webrootを共有
+    networks: [webnet]
+    restart: unless-stopped
+
+  node:
+    build:
+      context: ./node
+    container_name: node
+    expose:
+      - "3000"
+    networks: [webnet]
+    restart: unless-stopped
+
+  # renewを走らせるユーティリティ用。初回取得や更新に使う。
+  certbot:
+    image: certbot/certbot:latest
+    container_name: certbot
+    volumes:
+      - certbot-etc:/etc/letsencrypt
+      - certbot-web:/var/www/certbot
+    networks: [webnet]
+    restart: "no"   # 1回実行して終了する使い方（run/renewに都度使う）
+
+networks:
+  webnet:
+    driver: bridge
+
+volumes:
+  certbot-etc:
+  certbot-web:
