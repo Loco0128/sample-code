@@ -19,6 +19,13 @@ wp-config.php
 # Example plugin
 /wp-content/plugins/hello.php
 
+# other plugins
+/wp-content/plugins/wp-mail-smtp/
+/wp-content/plugins/wpforms-lite/
+/wp-content/plugins/akismet/
+
+
+
 # Uploads
 /wp-content/uploads/
 
